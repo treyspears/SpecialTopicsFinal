@@ -1,0 +1,23 @@
+kernel void clCalcInfluenceMap( global const float2*  redEntityPositions,
+				global const float2*  blueEntityPositions,
+				global float*         dstGrid,
+				uint		      gridWidth,
+				float 		      maxInfluence )
+{
+    int gridIndexX   = get_global_id(0);
+    int gridIndexY   = get_global_id(1);
+    int entityIndex  = get_global_id(2);
+    
+    int indexInOneDimensionGrid = ( gridIndexY * gridWidth ) + gridIndexX;
+    
+    float2 redEntityPosition = redEntityPositions[ entityIndex ];
+    float2 blueEntityPosition = blueEntityPositions[ entityIndex ];
+    
+    float distance = 1.0 + sqrt( pow( redEntityPosition.x - gridIndexX, 2 ) + pow( redEntityPosition.y - gridIndexY, 2 ) );
+    
+    dstGrid[ indexInOneDimensionGrid ] += maxInfluence / distance;
+    
+    distance = 1.0 + sqrt( pow( blueEntityPosition.x - gridIndexX, 2 ) + pow( blueEntityPosition.y - gridIndexY, 2 ) );
+    
+    dstGrid[ indexInOneDimensionGrid ] += -maxInfluence / distance;    
+}
